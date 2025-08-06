@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多級緩存架構 - API 測試頁面</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.healthy {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 多級緩存架構 - API 測試頁面</h1>
+            <p>Spring Boot 3.2 + Java 17 + MySQL + MyBatis Plus + Caffeine + Redis</p>
+        </div>
+        
+        <div class="content">
+            <!-- 系統監控 -->
+            <div class="section">
+                <h3>📊 系統監控</h3>
+                <div class="grid">
+                    <div>
+                        <button onclick="getPerformanceStats()">獲取性能統計</button>
+                        <button onclick="getCacheStats()">獲取緩存統計</button>
+                    </div>
+                    <div>
+                        <button onclick="getSystemHealth()">系統健康檢查</button>
+                        <button onclick="clearStats()">清理統計數據</button>
+                    </div>
+                </div>
+                <div id="monitorResult" class="result"></div>
+            </div>
+
+            <!-- 交易記錄測試 -->
+            <div class="section">
+                <h3>💳 交易記錄測試</h3>
+                <div class="grid">
+                    <div>
+                        <div class="form-group">
+                            <label>交易ID:</label>
+                            <input type="text" id="transactionId" placeholder="例如: TXN000001">
+                        </div>
+                        <button onclick="getTransaction()">查詢交易記錄</button>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label>用戶ID:</label>
+                            <input type="text" id="userId" placeholder="例如: USER001">
+                        </div>
+                        <button onclick="getUserTransactions()">查詢用戶交易</button>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div>
+                        <div class="form-group">
+                            <label>賬戶號碼:</label>
+                            <input type="text" id="accountNumber" placeholder="例如: ACC001">
+                        </div>
+                        <button onclick="getAccountTransactions()">查詢賬戶交易</button>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label>頁碼:</label>
+                            <input type="number" id="page" value="1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>頁大小:</label>
+                            <input type="number" id="size" value="10" min="1" max="100">
+                        </div>
+                        <button onclick="getTransactionsByPage()">分頁查詢</button>
+                    </div>
+                </div>
+                <div id="transactionResult" class="result"></div>
+            </div>
+
+            <!-- 黑名單測試 -->
+            <div class="section">
+                <h3>🚫 黑名單測試</h3>
+                <div class="grid">
+                    <div>
+                        <div class="form-group">
+                            <label>用戶ID:</label>
+                            <input type="text" id="blacklistUserId" placeholder="例如: USER001">
+                        </div>
+                        <button onclick="checkUserBlacklist()">檢查用戶黑名單</button>
+                        <button onclick="getUserBlacklist()">查詢用戶黑名單記錄</button>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label>賬戶號碼:</label>
+                            <input type="text" id="blacklistAccountNumber" placeholder="例如: ACC001">
+                        </div>
+                        <button onclick="checkAccountBlacklist()">檢查賬戶黑名單</button>
+                        <button onclick="getAccountBlacklist()">查詢賬戶黑名單記錄</button>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div>
+                        <button onclick="getBlacklistsByType()">按類型查詢黑名單</button>
+                        <button onclick="getActiveBlacklists()">查詢有效黑名單</button>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label>黑名單類型:</label>
+                            <select id="blacklistType">
+                                <option value="USER">用戶黑名單</option>
+                                <option value="ACCOUNT">賬戶黑名單</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="blacklistResult" class="result"></div>
+            </div>
+
+            <!-- 性能測試 -->
+            <div class="section">
+                <h3>⚡ 性能測試</h3>
+                <div class="grid">
+                    <div>
+                        <div class="form-group">
+                            <label>並發數:</label>
+                            <input type="number" id="concurrency" value="10" min="1" max="100">
+                        </div>
+                        <button onclick="testTransactionPerformance()">交易性能測試</button>
+                        <button onclick="testBlacklistPerformance()">黑名單性能測試</button>
+                    </div>
+                    <div>
+                        <button onclick="testComprehensivePerformance()">綜合性能測試</button>
+                        <button onclick="clearAllResults()">清空所有結果</button>
+                    </div>
+                </div>
+                <div id="performanceResult" class="result"></div>
+            </div>
+
+            <!-- 數據初始化 -->
+            <div class="section">
+                <h3>🗄️ 數據初始化</h3>
+                <div class="grid">
+                    <div>
+                        <button onclick="createTransactionTestData()">創建交易測試數據</button>
+                        <button onclick="createBlacklistTestData()">創建黑名單測試數據</button>
+                    </div>
+                    <div>
+                        <button onclick="checkHealth()">健康檢查</button>
+                        <button onclick="getAllEndpoints()">獲取所有端點</button>
+                    </div>
+                </div>
+                <div id="initResult" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                const data = await response.json();
+                return { success: true, data };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        function displayResult(elementId, result) {
+            const element = document.getElementById(elementId);
+            if (result.success) {
+                element.className = 'result success';
+                element.textContent = JSON.stringify(result.data, null, 2);
+            } else {
+                element.className = 'result error';
+                element.textContent = `錯誤: ${result.error}`;
+            }
+        }
+
+        // 系統監控功能
+        async function getPerformanceStats() {
+            const result = await makeRequest(`${API_BASE}/monitor/performance`);
+            displayResult('monitorResult', result);
+        }
+
+        async function getCacheStats() {
+            const result = await makeRequest(`${API_BASE}/monitor/cache`);
+            displayResult('monitorResult', result);
+        }
+
+        async function getSystemHealth() {
+            const result = await makeRequest(`${API_BASE}/monitor/health`);
+            displayResult('monitorResult', result);
+        }
+
+        async function clearStats() {
+            const result = await makeRequest(`${API_BASE}/monitor/clear-stats`);
+            displayResult('monitorResult', result);
+        }
+
+        // 交易記錄功能
+        async function getTransaction() {
+            const transactionId = document.getElementById('transactionId').value;
+            if (!transactionId) {
+                alert('請輸入交易ID');
+                return;
+            }
+            const result = await makeRequest(`${API_BASE}/transactions/${transactionId}`);
+            displayResult('transactionResult', result);
+        }
+
+        async function getUserTransactions() {
+            const userId = document.getElementById('userId').value;
+            if (!userId) {
+                alert('請輸入用戶ID');
+                return;
+            }
+            const result = await makeRequest(`${API_BASE}/transactions/user/${userId}`);
+            displayResult('transactionResult', result);
+        }
+
+        async function getAccountTransactions() {
+            const accountNumber = document.getElementById('accountNumber').value;
+            if (!accountNumber) {
+                alert('請輸入賬戶號碼');
+                return;
+            }
+            const result = await makeRequest(`${API_BASE}/transactions/account/${accountNumber}`);
+            displayResult('transactionResult', result);
+        }
+
+        async function getTransactionsByPage() {
+            const userId = document.getElementById('userId').value;
+            const page = document.getElementById('page').value;
+            const size = document.getElementById('size').value;
+            if (!userId) {
+                alert('請輸入用戶ID');
+                return;
+            }
+            const result = await makeRequest(`${API_BASE}/transactions/user/${userId}/page?page=${page}&size=${size}`);
+            displayResult('transactionResult', result);
+        }
+
+        // 黑名單功能
+        async function checkUserBlacklist() {
+            const userId = document.getElementById('blacklistUserId').value;
+            if (!userId) {
+                alert('請輸入用戶ID');
+                return;
+            }
+            const result = await makeRequest(`${API_BASE}/blacklist/check/user/${userId}`);
+            displayResult('blacklistResult', result);
+        }
+
+        async function checkAccountBlacklist() {
+            const accountNumber = document.getElementById('blacklistAccountNumber').value;
+            if (!accountNumber) {
+                alert('請輸入賬戶號碼');
+                return;
+            }
+            const result = await makeRequest(`${API_BASE}/blacklist/check/account/${accountNumber}`);
+            displayResult('blacklistResult', result);
+        }
+
+        async function getUserBlacklist() {
+            const userId = document.getElementById('blacklistUserId').value;
+            if (!userId) {
+                alert('請輸入用戶ID');
+                return;
+            }
+            const result = await makeRequest(`${API_BASE}/blacklist/user/${userId}`);
+            displayResult('blacklistResult', result);
+        }
+
+        async function getAccountBlacklist() {
+            const accountNumber = document.getElementById('blacklistAccountNumber').value;
+            if (!accountNumber) {
+                alert('請輸入賬戶號碼');
+                return;
+            }
+            const result = await makeRequest(`${API_BASE}/blacklist/account/${accountNumber}`);
+            displayResult('blacklistResult', result);
+        }
+
+        async function getBlacklistsByType() {
+            const blacklistType = document.getElementById('blacklistType').value;
+            const result = await makeRequest(`${API_BASE}/blacklist/type/${blacklistType}`);
+            displayResult('blacklistResult', result);
+        }
+
+        async function getActiveBlacklists() {
+            const result = await makeRequest(`${API_BASE}/blacklist/active`);
+            displayResult('blacklistResult', result);
+        }
+
+        // 性能測試功能
+        async function testTransactionPerformance() {
+            const concurrency = document.getElementById('concurrency').value;
+            const result = await makeRequest(`${API_BASE}/test/transactions?concurrency=${concurrency}`);
+            displayResult('performanceResult', result);
+        }
+
+        async function testBlacklistPerformance() {
+            const concurrency = document.getElementById('concurrency').value;
+            const result = await makeRequest(`${API_BASE}/test/blacklist?concurrency=${concurrency}`);
+            displayResult('performanceResult', result);
+        }
+
+        async function testComprehensivePerformance() {
+            const result = await makeRequest(`${API_BASE}/test/comprehensive`);
+            displayResult('performanceResult', result);
+        }
+
+        // 數據初始化功能
+        async function createTransactionTestData() {
+            const result = await makeRequest(`${API_BASE}/transactions/test-data`, { method: 'POST' });
+            displayResult('initResult', result);
+        }
+
+        async function createBlacklistTestData() {
+            const result = await makeRequest(`${API_BASE}/blacklist/test-data`, { method: 'POST' });
+            displayResult('initResult', result);
+        }
+
+        async function checkHealth() {
+            const result = await makeRequest(`${API_BASE}/transactions/health`);
+            displayResult('initResult', result);
+        }
+
+        async function getAllEndpoints() {
+            const endpoints = [
+                'GET /api/transactions/{transactionId}',
+                'GET /api/transactions/user/{userId}',
+                'GET /api/transactions/account/{accountNumber}',
+                'GET /api/transactions/user/{userId}/page',
+                'POST /api/transactions',
+                'PUT /api/transactions/{transactionId}/status',
+                'GET /api/blacklist/check/user/{userId}',
+                'GET /api/blacklist/check/account/{accountNumber}',
+                'GET /api/blacklist/user/{userId}',
+                'GET /api/blacklist/account/{accountNumber}',
+                'GET /api/blacklist/type/{blacklistType}',
+                'GET /api/blacklist/active',
+                'POST /api/blacklist',
+                'PUT /api/blacklist/{id}/status',
+                'GET /api/test/transactions',
+                'GET /api/test/blacklist',
+                'GET /api/test/comprehensive',
+                'GET /api/monitor/performance',
+                'GET /api/monitor/cache',
+                'GET /api/monitor/health',
+                'GET /api/monitor/clear-stats'
+            ];
+            const element = document.getElementById('initResult');
+            element.className = 'result success';
+            element.textContent = '可用的 API 端點:\n\n' + endpoints.join('\n');
+        }
+
+        function clearAllResults() {
+            document.getElementById('transactionResult').textContent = '';
+            document.getElementById('blacklistResult').textContent = '';
+            document.getElementById('performanceResult').textContent = '';
+            document.getElementById('initResult').textContent = '';
+            document.getElementById('monitorResult').textContent = '';
+        }
+
+        // 頁面加載時檢查服務狀態
+        window.onload = async function() {
+            try {
+                const response = await fetch(`${API_BASE}/transactions/health`);
+                if (response.ok) {
+                    console.log('✅ 服務運行正常');
+                } else {
+                    console.log('❌ 服務連接失敗');
+                }
+            } catch (error) {
+                console.log('❌ 無法連接到服務:', error.message);
+            }
+        };
+    </script>
+</body>
+</html> 

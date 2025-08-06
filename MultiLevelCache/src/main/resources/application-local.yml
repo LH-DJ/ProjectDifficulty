@@ -1,0 +1,49 @@
+# 本地開發配置
+spring:
+  # 禁用 Redis 自動配置
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+  
+  # 數據庫配置保持不變
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/multilevel_cache?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&autoReconnect=true&failOverReadOnly=false
+    username: root
+    password: scfmp845
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+
+# 緩存配置 - 只使用 Caffeine
+cache:
+  caffeine:
+    transaction:
+      maximum-size: 1000
+      expire-after-write: 30m
+      expire-after-access: 10m
+    blacklist:
+      maximum-size: 500
+      expire-after-write: 60m
+      expire-after-access: 20m
+
+# 日誌配置
+logging:
+  level:
+    root: info
+    com.multilevelcache: debug
+
+# Actuator 配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,caches
+  endpoint:
+    health:
+      show-details: always 

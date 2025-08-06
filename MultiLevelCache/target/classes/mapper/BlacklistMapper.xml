@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.multilevelcache.mapper.BlacklistMapper">
+
+    <!-- 結果映射 -->
+    <resultMap id="BaseResultMap" type="com.multilevelcache.entity.Blacklist">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="account_number" property="accountNumber" jdbcType="VARCHAR"/>
+        <result column="reason" property="reason" jdbcType="VARCHAR"/>
+        <result column="blacklist_type" property="blacklistType" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+        <result column="expires_at" property="expiresAt" jdbcType="TIMESTAMP"/>
+        <result column="deleted" property="deleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!-- 基礎字段 -->
+    <sql id="Base_Column_List">
+        id, user_id, account_number, reason, blacklist_type, status, 
+        created_at, updated_at, expires_at, deleted
+    </sql>
+
+    <!-- 根據用戶ID查詢 -->
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM blacklist
+        WHERE user_id = #{userId} AND deleted = 0
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 根據賬戶號碼查詢 -->
+    <select id="selectByAccountNumber" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM blacklist
+        WHERE account_number = #{accountNumber} AND deleted = 0
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 檢查用戶是否在黑名單中 -->
+    <select id="isUserBlacklisted" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM blacklist
+        WHERE user_id = #{userId} 
+          AND status = 'ACTIVE'
+          AND (expires_at IS NULL OR expires_at > NOW())
+          AND deleted = 0
+        LIMIT 1
+    </select>
+
+    <!-- 檢查賬戶是否在黑名單中 -->
+    <select id="isAccountBlacklisted" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM blacklist
+        WHERE account_number = #{accountNumber}
+          AND status = 'ACTIVE'
+          AND (expires_at IS NULL OR expires_at > NOW())
+          AND deleted = 0
+        LIMIT 1
+    </select>
+
+    <!-- 根據黑名單類型查詢 -->
+    <select id="selectByBlacklistType" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM blacklist
+        WHERE blacklist_type = #{blacklistType} AND deleted = 0
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 根據狀態查詢 -->
+    <select id="selectByStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM blacklist
+        WHERE status = #{status} AND deleted = 0
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 查詢有效的黑名單記錄 -->
+    <select id="selectActiveBlacklists" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM blacklist
+        WHERE status = 'ACTIVE'
+          AND (expires_at IS NULL OR expires_at > NOW())
+          AND deleted = 0
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 統計用戶黑名單數量 -->
+    <select id="countByUserId" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM blacklist
+        WHERE user_id = #{userId} AND deleted = 0
+    </select>
+
+    <!-- 統計賬戶黑名單數量 -->
+    <select id="countByAccountNumber" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM blacklist
+        WHERE account_number = #{accountNumber} AND deleted = 0
+    </select>
+
+</mapper> 
