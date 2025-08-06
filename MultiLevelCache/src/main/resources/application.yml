@@ -5,11 +5,19 @@ spring:
   application:
     name: MultiLevelCache
   
-  # 禁用 Redis 自動配置
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+  # Redis 配置
+  redis:
+    host: 8.129.17.242
+    port: 6379
+    password: 1234
+    database: 0
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
   
   # MySQL 數據庫配置
   datasource:
@@ -39,32 +47,42 @@ spring:
     mapper-locations: classpath*:/mapper/**/*.xml
     type-aliases-package: com.multilevelcache.entity
 
-# 緩存配置 - 只使用 Caffeine
+# 二級緩存配置
 cache:
+  # L1 緩存 (Caffeine) - 本地緩存
   caffeine:
     transaction:
       maximum-size: 1000
-      expire-after-write: 30m
-      expire-after-access: 10m
+      expire-after-write: 10s
+      expire-after-access: 10s
     blacklist:
       maximum-size: 500
       expire-after-write: 60m
       expire-after-access: 20m
+  
+  # L2 緩存 (Redis) - 分布式緩存
+  redis:
+    transaction:
+      expire-after-write: 2h
+      expire-after-access: 1h
+    blacklist:
+      expire-after-write: 4h
+      expire-after-access: 2h
 
 # 日誌配置
 logging:
   level:
     root: info
+    com.multilevelcache.cache: debug
 
 # Actuator 配置
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,caches
   endpoint:
     health:
       show-details: when-authorized
       show-components: always
-      defaults-disabled: redis
 debug: false

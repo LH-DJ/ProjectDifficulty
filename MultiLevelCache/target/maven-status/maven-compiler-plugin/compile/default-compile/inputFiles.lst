@@ -1,6 +1,8 @@
 G:\2025Project\ProjectCode\ProjectDifficulty\MultiLevelCache\src\main\java\com\multilevelcache\config\MybatisPlusConfig.java
 G:\2025Project\ProjectCode\ProjectDifficulty\MultiLevelCache\src\main\java\com\multilevelcache\aspect\PerformanceMonitorAspect.java
 G:\2025Project\ProjectCode\ProjectDifficulty\MultiLevelCache\src\main\java\com\multilevelcache\controller\BlacklistController.java
+G:\2025Project\ProjectCode\ProjectDifficulty\MultiLevelCache\src\main\java\com\multilevelcache\config\RedisCacheConfig.java
+G:\2025Project\ProjectCode\ProjectDifficulty\MultiLevelCache\src\main\java\com\multilevelcache\controller\CacheController.java
 G:\2025Project\ProjectCode\ProjectDifficulty\MultiLevelCache\src\main\java\com\multilevelcache\config\AsyncConfig.java
 G:\2025Project\ProjectCode\ProjectDifficulty\MultiLevelCache\src\main\java\com\multilevelcache\controller\PerformanceTestController.java
 G:\2025Project\ProjectCode\ProjectDifficulty\MultiLevelCache\src\main\java\com\multilevelcache\dto\ApiResponse.java

@@ -6,8 +6,10 @@ com\multilevelcache\dto\BlacklistDTO.class
 com\multilevelcache\mapper\BlacklistMapper.class
 com\multilevelcache\controller\PerformanceTestController$ComprehensiveTestResult.class
 com\multilevelcache\config\CacheConfig.class
+com\multilevelcache\controller\CacheController.class
 com\multilevelcache\MultiLevelCacheApplication.class
 com\multilevelcache\config\MybatisPlusConfig$1.class
+com\multilevelcache\config\RedisCacheConfig.class
 com\multilevelcache\dto\BlacklistDTO$BlacklistDTOBuilder.class
 com\multilevelcache\dto\TransactionDTO.class
 com\multilevelcache\cache\MultiLevelCacheService.class
