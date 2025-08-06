@@ -13,8 +13,8 @@ public class MultiLevelCacheApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MultiLevelCacheApplication.class, args);
-        System.out.println("🚀 多級緩存應用啟動成功！");
-        System.out.println("📊 訪問地址: http://localhost:8080");
-        System.out.println("🏥 健康檢查: http://localhost:8080/actuator/health");
+        System.out.println("🚀 多级缓存应用启动成功！");
+        System.out.println("📊 访问地址: http://localhost:8080");
+        System.out.println("🏥 健康检查: http://localhost:8080/actuator/health");
     }
 } 

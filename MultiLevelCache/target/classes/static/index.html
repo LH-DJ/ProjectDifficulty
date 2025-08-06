@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>多級緩存架構 - API 測試頁面</title>
+    <title>多级缓存架构 - API 测试页面</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -122,22 +122,22 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 多級緩存架構 - API 測試頁面</h1>
+            <h1>🚀 多级缓存架构 - API 测试页面</h1>
             <p>Spring Boot 3.2 + Java 17 + MySQL + MyBatis Plus + Caffeine + Redis</p>
         </div>
         
         <div class="content">
             <!-- 系統監控 -->
             <div class="section">
-                <h3>📊 系統監控</h3>
+                <h3>📊 系统监控</h3>
                 <div class="grid">
                     <div>
-                        <button onclick="getPerformanceStats()">獲取性能統計</button>
-                        <button onclick="getCacheStats()">獲取緩存統計</button>
+                        <button onclick="getPerformanceStats()">获取性能统计</button>
+                        <button onclick="getCacheStats()">获取缓存统计</button>
                     </div>
                     <div>
-                        <button onclick="getSystemHealth()">系統健康檢查</button>
-                        <button onclick="clearStats()">清理統計數據</button>
+                        <button onclick="getSystemHealth()">系统健康检查</button>
+                        <button onclick="clearStats()">清理统计数据</button>
                     </div>
                 </div>
                 <div id="monitorResult" class="result"></div>
@@ -145,41 +145,41 @@
 
             <!-- 交易記錄測試 -->
             <div class="section">
-                <h3>💳 交易記錄測試</h3>
+                <h3>💳 交易记录测试</h3>
                 <div class="grid">
                     <div>
                         <div class="form-group">
                             <label>交易ID:</label>
                             <input type="text" id="transactionId" placeholder="例如: TXN000001">
                         </div>
-                        <button onclick="getTransaction()">查詢交易記錄</button>
+                        <button onclick="getTransaction()">查询交易记录</button>
                     </div>
                     <div>
                         <div class="form-group">
                             <label>用戶ID:</label>
                             <input type="text" id="userId" placeholder="例如: USER001">
                         </div>
-                        <button onclick="getUserTransactions()">查詢用戶交易</button>
+                        <button onclick="getUserTransactions()">查询用户交易</button>
                     </div>
                 </div>
                 <div class="grid">
                     <div>
                         <div class="form-group">
-                            <label>賬戶號碼:</label>
+                            <label>账户号码:</label>
                             <input type="text" id="accountNumber" placeholder="例如: ACC001">
                         </div>
-                        <button onclick="getAccountTransactions()">查詢賬戶交易</button>
+                        <button onclick="getAccountTransactions()">查询账户交易</button>
                     </div>
                     <div>
                         <div class="form-group">
-                            <label>頁碼:</label>
+                            <label>页码:</label>
                             <input type="number" id="page" value="1" min="1">
                         </div>
                         <div class="form-group">
-                            <label>頁大小:</label>
+                            <label>页大小:</label>
                             <input type="number" id="size" value="10" min="1" max="100">
                         </div>
-                        <button onclick="getTransactionsByPage()">分頁查詢</button>
+                        <button onclick="getTransactionsByPage()">分页查询</button>
                     </div>
                 </div>
                 <div id="transactionResult" class="result"></div>
@@ -187,36 +187,36 @@
 
             <!-- 黑名單測試 -->
             <div class="section">
-                <h3>🚫 黑名單測試</h3>
+                <h3>🚫 黑名单测试</h3>
                 <div class="grid">
                     <div>
                         <div class="form-group">
-                            <label>用戶ID:</label>
+                            <label>用户ID:</label>
                             <input type="text" id="blacklistUserId" placeholder="例如: USER001">
                         </div>
-                        <button onclick="checkUserBlacklist()">檢查用戶黑名單</button>
-                        <button onclick="getUserBlacklist()">查詢用戶黑名單記錄</button>
+                        <button onclick="checkUserBlacklist()">检查用户黑名单</button>
+                        <button onclick="getUserBlacklist()">查询用户黑名单记录</button>
                     </div>
                     <div>
                         <div class="form-group">
-                            <label>賬戶號碼:</label>
+                            <label>账户号码:</label>
                             <input type="text" id="blacklistAccountNumber" placeholder="例如: ACC001">
                         </div>
-                        <button onclick="checkAccountBlacklist()">檢查賬戶黑名單</button>
-                        <button onclick="getAccountBlacklist()">查詢賬戶黑名單記錄</button>
+                        <button onclick="checkAccountBlacklist()">检查账户黑名单</button>
+                        <button onclick="getAccountBlacklist()">查询账户黑名单记录</button>
                     </div>
                 </div>
                 <div class="grid">
                     <div>
-                        <button onclick="getBlacklistsByType()">按類型查詢黑名單</button>
-                        <button onclick="getActiveBlacklists()">查詢有效黑名單</button>
+                        <button onclick="getBlacklistsByType()">按类型查询黑名单</button>
+                        <button onclick="getActiveBlacklists()">查询有效黑名单</button>
                     </div>
                     <div>
                         <div class="form-group">
-                            <label>黑名單類型:</label>
+                            <label>黑名单类型:</label>
                             <select id="blacklistType">
-                                <option value="USER">用戶黑名單</option>
-                                <option value="ACCOUNT">賬戶黑名單</option>
+                                <option value="USER">用户黑名单</option>
+                                <option value="ACCOUNT">账户黑名单</option>
                             </select>
                         </div>
                     </div>
@@ -226,18 +226,18 @@
 
             <!-- 性能測試 -->
             <div class="section">
-                <h3>⚡ 性能測試</h3>
+                <h3>⚡ 性能测试</h3>
                 <div class="grid">
                     <div>
                         <div class="form-group">
-                            <label>並發數:</label>
+                            <label>并发数:</label>
                             <input type="number" id="concurrency" value="10" min="1" max="100">
                         </div>
-                        <button onclick="testTransactionPerformance()">交易性能測試</button>
-                        <button onclick="testBlacklistPerformance()">黑名單性能測試</button>
+                        <button onclick="testTransactionPerformance()">交易性能测试</button>
+                        <button onclick="testBlacklistPerformance()">黑名单性能测试</button>
                     </div>
                     <div>
-                        <button onclick="testComprehensivePerformance()">綜合性能測試</button>
+                        <button onclick="testComprehensivePerformance()">综合性能测试</button>
                         <button onclick="clearAllResults()">清空所有結果</button>
                     </div>
                 </div>
@@ -246,15 +246,15 @@
 
             <!-- 數據初始化 -->
             <div class="section">
-                <h3>🗄️ 數據初始化</h3>
+                <h3>🗄️ 数据初始化</h3>
                 <div class="grid">
                     <div>
-                        <button onclick="createTransactionTestData()">創建交易測試數據</button>
-                        <button onclick="createBlacklistTestData()">創建黑名單測試數據</button>
+                        <button onclick="createTransactionTestData()">创建交易测试数据</button>
+                        <button onclick="createBlacklistTestData()">创建黑名单测试数据</button>
                     </div>
                     <div>
-                        <button onclick="checkHealth()">健康檢查</button>
-                        <button onclick="getAllEndpoints()">獲取所有端點</button>
+                        <button onclick="checkHealth()">健康检查</button>
+                        <button onclick="getAllEndpoints()">获取所有端点</button>
                     </div>
                 </div>
                 <div id="initResult" class="result"></div>
@@ -288,7 +288,7 @@
                 element.textContent = JSON.stringify(result.data, null, 2);
             } else {
                 element.className = 'result error';
-                element.textContent = `錯誤: ${result.error}`;
+                element.textContent = `错误: ${result.error}`;
             }
         }
 
@@ -317,7 +317,7 @@
         async function getTransaction() {
             const transactionId = document.getElementById('transactionId').value;
             if (!transactionId) {
-                alert('請輸入交易ID');
+                alert('请输入交易ID');
                 return;
             }
             const result = await makeRequest(`${API_BASE}/transactions/${transactionId}`);
@@ -327,7 +327,7 @@
         async function getUserTransactions() {
             const userId = document.getElementById('userId').value;
             if (!userId) {
-                alert('請輸入用戶ID');
+                alert('请输入用戶ID');
                 return;
             }
             const result = await makeRequest(`${API_BASE}/transactions/user/${userId}`);
@@ -337,7 +337,7 @@
         async function getAccountTransactions() {
             const accountNumber = document.getElementById('accountNumber').value;
             if (!accountNumber) {
-                alert('請輸入賬戶號碼');
+                alert('请输入账户号码');
                 return;
             }
             const result = await makeRequest(`${API_BASE}/transactions/account/${accountNumber}`);
@@ -349,7 +349,7 @@
             const page = document.getElementById('page').value;
             const size = document.getElementById('size').value;
             if (!userId) {
-                alert('請輸入用戶ID');
+                alert('请输入用戶ID');
                 return;
             }
             const result = await makeRequest(`${API_BASE}/transactions/user/${userId}/page?page=${page}&size=${size}`);
@@ -360,7 +360,7 @@
         async function checkUserBlacklist() {
             const userId = document.getElementById('blacklistUserId').value;
             if (!userId) {
-                alert('請輸入用戶ID');
+                alert('请输入用戶ID');
                 return;
             }
             const result = await makeRequest(`${API_BASE}/blacklist/check/user/${userId}`);
@@ -370,7 +370,7 @@
         async function checkAccountBlacklist() {
             const accountNumber = document.getElementById('blacklistAccountNumber').value;
             if (!accountNumber) {
-                alert('請輸入賬戶號碼');
+                alert('请输入账户号码');
                 return;
             }
             const result = await makeRequest(`${API_BASE}/blacklist/check/account/${accountNumber}`);
@@ -380,7 +380,7 @@
         async function getUserBlacklist() {
             const userId = document.getElementById('blacklistUserId').value;
             if (!userId) {
-                alert('請輸入用戶ID');
+                alert('请输入用戶ID');
                 return;
             }
             const result = await makeRequest(`${API_BASE}/blacklist/user/${userId}`);
@@ -390,7 +390,7 @@
         async function getAccountBlacklist() {
             const accountNumber = document.getElementById('blacklistAccountNumber').value;
             if (!accountNumber) {
-                alert('請輸入賬戶號碼');
+                alert('请输入账户号码');
                 return;
             }
             const result = await makeRequest(`${API_BASE}/blacklist/account/${accountNumber}`);
@@ -468,7 +468,7 @@
             ];
             const element = document.getElementById('initResult');
             element.className = 'result success';
-            element.textContent = '可用的 API 端點:\n\n' + endpoints.join('\n');
+            element.textContent = '可用的 API 端点:\n\n' + endpoints.join('\n');
         }
 
         function clearAllResults() {
@@ -484,12 +484,12 @@
             try {
                 const response = await fetch(`${API_BASE}/transactions/health`);
                 if (response.ok) {
-                    console.log('✅ 服務運行正常');
+                    console.log('✅ 服务运行正常');
                 } else {
-                    console.log('❌ 服務連接失敗');
+                    console.log('❌ 服务连接失败');
                 }
             } catch (error) {
-                console.log('❌ 無法連接到服務:', error.message);
+                console.log('❌ 无法连接到服务:', error.message);
             }
         };
     </script>
