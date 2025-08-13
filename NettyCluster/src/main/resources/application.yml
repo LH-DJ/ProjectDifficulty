@@ -1,0 +1,85 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: netty-cluster
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        namespace: public
+        group: DEFAULT_GROUP
+        register-enabled: true
+        ephemeral: true
+      config:
+        server-addr: localhost:8848
+        namespace: public
+        group: DEFAULT_GROUP
+        file-extension: yml
+        refresh-enabled: true
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: netty-cluster-route
+          uri: lb://netty-cluster
+          predicates:
+            - Path=/api/cluster/**
+          filters:
+            - StripPrefix=1
+    loadbalancer:
+      ribbon:
+        enabled: false
+      configurations: default
+      default-configuration: least-connection
+
+# Netty集群配置
+netty:
+  cluster:
+    server:
+      port: 9090
+      boss-threads: 1
+      worker-threads: 4
+      max-connections: 1000
+    node:
+      id: ${random.uuid}
+      name: ${spring.application.name}-${random.int:1000,9999}
+      host: ${server.address:localhost}
+    discovery:
+      heartbeat-interval: 30000
+      heartbeat-timeout: 90000
+      seed-nodes: localhost:9090,localhost:9091,localhost:9092
+    loadbalancer:
+      strategy: round-robin
+    serialization:
+      type: json
+
+# 日志配置
+logging:
+  level:
+    com.example.nettycluster: DEBUG
+    io.netty: INFO
+    org.springframework.cloud.gateway: DEBUG
+    com.alibaba.cloud: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,cluster
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true

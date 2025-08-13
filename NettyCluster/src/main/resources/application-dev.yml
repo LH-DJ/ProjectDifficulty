@@ -1,0 +1,28 @@
+# 开发环境配置
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+
+# 开发环境Netty配置
+netty:
+  cluster:
+    server:
+      port: 9090
+      boss-threads: 1
+      worker-threads: 2
+      max-connections: 100
+    discovery:
+      heartbeat-interval: 10000
+      heartbeat-timeout: 30000
+      seed-nodes: localhost:9090
+
+# 开发环境日志
+logging:
+  level:
+    com.example.nettycluster: DEBUG
+    io.netty: DEBUG
+    org.springframework.cloud.gateway: DEBUG

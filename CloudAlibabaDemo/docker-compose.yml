@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # MySQL 數據庫
+  mysql:
+    image: mysql:8.0
+    container_name: cloud-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: cloud_demo
+      MYSQL_USER: cloud_user
+      MYSQL_PASSWORD: cloud_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - cloud-network
+    command: --default-authentication-plugin=mysql_native_password
+
+  # Nacos 服務註冊與配置中心
+  nacos:
+    image: nacos/nacos-server:v2.2.3
+    container_name: cloud-nacos
+    environment:
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - MYSQL_SERVICE_HOST=mysql
+      - MYSQL_SERVICE_PORT=3306
+      - MYSQL_SERVICE_USER=cloud_user
+      - MYSQL_SERVICE_PASSWORD=cloud_pass
+      - MYSQL_SERVICE_DB_NAME=nacos_config
+      - MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    volumes:
+      - nacos_data:/home/nacos/data
+      - nacos_logs:/home/nacos/logs
+    networks:
+      - cloud-network
+    depends_on:
+      - mysql
+
+  # Sentinel 控制台
+  sentinel:
+    image: bladex/sentinel-dashboard:1.8.6
+    container_name: cloud-sentinel
+    ports:
+      - "8080:8858"
+    networks:
+      - cloud-network
+
+  # Seata 分佈式事務
+  seata:
+    image: seataio/seata:1.7.0
+    container_name: cloud-seata
+    environment:
+      - SEATA_CONFIG_NAME=file:/root/seata-config/registry
+      - SEATA_CONFIG_FILE_PATH=/root/seata-config
+    ports:
+      - "8091:8091"
+    volumes:
+      - ./seata-config:/root/seata-config
+    networks:
+      - cloud-network
+
+  # Redis 緩存
+  redis:
+    image: redis:7-alpine
+    container_name: cloud-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - cloud-network
+    command: redis-server --appendonly yes
+
+volumes:
+  mysql_data:
+  nacos_data:
+  nacos_logs:
+  redis_data:
+
+networks:
+  cloud-network:
+    driver: bridge

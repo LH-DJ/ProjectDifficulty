@@ -1,0 +1,155 @@
+version: '3.8'
+
+services:
+  # Nacos服务注册中心
+  nacos:
+    image: nacos/nacos-server:v2.2.3
+    container_name: nacos-server
+    environment:
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - MYSQL_SERVICE_HOST=mysql
+      - MYSQL_SERVICE_DB_NAME=nacos
+      - MYSQL_SERVICE_USER=nacos
+      - MYSQL_SERVICE_PASSWORD=nacos
+      - MYSQL_SERVICE_PORT=3306
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    depends_on:
+      - mysql
+    networks:
+      - netty-cluster-network
+
+  # MySQL数据库
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=nacos
+      - MYSQL_USER=nacos
+      - MYSQL_PASSWORD=nacos
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - netty-cluster-network
+
+  # Netty集群节点1
+  netty-cluster-1:
+    build: .
+    container_name: netty-cluster-1
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SERVER_PORT=8080
+      - NETTY_CLUSTER_SERVER_PORT=9090
+      - NETTY_CLUSTER_NODE_ID=node-1
+      - NETTY_CLUSTER_NODE_NAME=netty-cluster-1
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    depends_on:
+      - nacos
+    networks:
+      - netty-cluster-network
+
+  # Netty集群节点2
+  netty-cluster-2:
+    build: .
+    container_name: netty-cluster-2
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SERVER_PORT=8081
+      - NETTY_CLUSTER_SERVER_PORT=9091
+      - NETTY_CLUSTER_NODE_ID=node-2
+      - NETTY_CLUSTER_NODE_NAME=netty-cluster-2
+    ports:
+      - "8081:8081"
+      - "9091:9091"
+    depends_on:
+      - nacos
+    networks:
+      - netty-cluster-network
+
+  # Netty集群节点3
+  netty-cluster-3:
+    build: .
+    container_name: netty-cluster-3
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SERVER_PORT=8082
+      - NETTY_CLUSTER_SERVER_PORT=9092
+      - NETTY_CLUSTER_NODE_ID=node-3
+      - NETTY_CLUSTER_NODE_NAME=netty-cluster-3
+    ports:
+      - "8082:8082"
+      - "9092:9092"
+    depends_on:
+      - nacos
+    networks:
+      - netty-cluster-network
+
+  # Spring Cloud Gateway
+  gateway:
+    image: openjdk:17-jdk-slim
+    container_name: gateway
+    working_dir: /app
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SERVER_PORT=9000
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./gateway:/app
+    command: >
+      sh -c "cd /app && 
+             java -jar gateway.jar"
+    depends_on:
+      - nacos
+    networks:
+      - netty-cluster-network
+
+  # Prometheus监控
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - netty-cluster-network
+
+  # Grafana可视化
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - netty-cluster-network
+
+volumes:
+  mysql_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  netty-cluster-network:
+    driver: bridge

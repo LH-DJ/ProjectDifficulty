@@ -39,6 +39,7 @@ public class TransactionService {
         
         // 嘗試從緩存獲取
         Transaction cachedTransaction = cacheService.get(CACHE_NAME, cacheKey, Transaction.class);
+        //如果L1(本地花奴才能)失效了，然后从redis中拿到了值，改值通常需要回填到L1中，所以这里直接写死L1
         if (cachedTransaction != null) {
             return buildTransactionDTO(cachedTransaction, System.currentTimeMillis() - startTime, "L1", true);
         }

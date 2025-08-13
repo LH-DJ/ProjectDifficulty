@@ -1,0 +1,67 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: user-service
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/cloud_user?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        namespace: public
+        group: DEFAULT_GROUP
+      config:
+        server-addr: localhost:8848
+        namespace: public
+        group: DEFAULT_GROUP
+        file-extension: yml
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+      datasource:
+        ds:
+          nacos:
+            server-addr: localhost:8848
+            dataId: sentinel-rules
+            groupId: DEFAULT_GROUP
+            rule-type: flow
+
+# Seata 配置
+seata:
+  tx-service-group: my_test_tx_group
+  service:
+    vgroup-mapping:
+      my_test_tx_group: default
+  registry:
+    type: nacos
+    nacos:
+      server-addr: localhost:8848
+      namespace: public
+      group: SEATA_GROUP
+  config:
+    type: nacos
+    nacos:
+      server-addr: localhost:8848
+      namespace: public
+      group: SEATA_GROUP
+
+# 日誌配置
+logging:
+  level:
+    com.example: debug
+    org.springframework.cloud.alibaba: debug

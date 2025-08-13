@@ -1,0 +1,49 @@
+# 简化配置文件
+server:
+  port: 8080
+
+spring:
+  application:
+    name: netty-cluster-simple
+  profiles:
+    active: simple
+
+# 简化的Netty集群配置
+netty:
+  cluster:
+    server:
+      port: 9090
+      boss-threads: 1
+      worker-threads: 2
+      max-connections: 100
+    node:
+      id: simple-node-001
+      name: simple-netty-cluster
+      host: localhost
+    discovery:
+      heartbeat-interval: 10000
+      heartbeat-timeout: 30000
+      seed-nodes: localhost:9090
+    loadbalancer:
+      strategy: round-robin
+    serialization:
+      type: json
+
+# 简化日志配置
+logging:
+  level:
+    com.example.nettycluster: INFO
+    io.netty: INFO
+    org.springframework: INFO
+  pattern:
+    console: "%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# 自定义健康检查端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info
+  endpoint:
+    info:
+      enabled: true

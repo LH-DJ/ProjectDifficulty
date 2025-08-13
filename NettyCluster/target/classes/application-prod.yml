@@ -1,0 +1,72 @@
+# 生产环境配置
+server:
+  port: 8080
+
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:public}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        register-enabled: true
+        ephemeral: true
+      config:
+        server-addr: ${NACOS_SERVER:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:public}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        file-extension: yml
+        refresh-enabled: true
+
+# 生产环境Netty配置
+netty:
+  cluster:
+    server:
+      port: ${NETTY_CLUSTER_SERVER_PORT:9090}
+      boss-threads: 2
+      worker-threads: 8
+      max-connections: 5000
+    node:
+      id: ${NETTY_CLUSTER_NODE_ID:node-prod}
+      name: ${NETTY_CLUSTER_NODE_NAME:netty-cluster-prod}
+      host: ${NETTY_CLUSTER_NODE_HOST:localhost}
+    discovery:
+      heartbeat-interval: 60000
+      heartbeat-timeout: 180000
+      seed-nodes: ${NETTY_CLUSTER_SEED_NODES:localhost:9090,localhost:9091,localhost:9092}
+    loadbalancer:
+      strategy: least-connections
+    serialization:
+      type: json
+
+# 生产环境日志
+logging:
+  level:
+    com.example.nettycluster: INFO
+    io.netty: WARN
+    org.springframework.cloud.gateway: INFO
+    com.alibaba.cloud: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/netty-cluster.log
+    max-size: 100MB
+    max-history: 30
+
+# 生产环境管理端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+      environment: prod
